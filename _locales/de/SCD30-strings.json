@@ -1,0 +1,5 @@
+{
+	"SCD30.readCO2|block": "CO2 Wert",
+	"SCD30.readTemperature|block": "Temperatur",
+	"SCD30.readHumidity|block": "Luftfeuchtigkeit"
+}

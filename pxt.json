@@ -1,0 +1,18 @@
+{
+    "name": "SCD30",
+    "version": "0.0.1",
+    "description": "SCD30 for MakeCode",
+    "dependencies": {
+        "core": "*"
+    },
+    "files": [
+        "README.md",
+        "main.ts",
+        "_locales/de/SCD30-strings.json",
+        "_locales/de/SCD30-jsdoc-strings.json"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "public": true
+}
