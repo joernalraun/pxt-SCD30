@@ -3,7 +3,33 @@
  */
 //%color=#444444 icon="\uf185" block="SCD30"
 namespace SCD30 {
-    
+
+    let data = pins.createBuffer(2)
+    //data[1] = 0xEF
+    //data[0] = 0xBE
+    //hier muss die Dezimalzahl 146 rauskommen!
+    //data[0] ist immer das höchste Byte!
+    //basic.showNumber(generate_crc(data))
+
+    function generate_crc(data: Buffer): number {
+        let current_byte;
+        let crc = pins.createBuffer(1)
+        crc.setNumber(NumberFormat.UInt8LE, 0, 0xFF)
+        let crc_bit;
+
+        //calculates 8-Bit checksum with given polynomial 
+        for (current_byte = 0; current_byte < data.length; ++current_byte) {
+            crc.setNumber(NumberFormat.UInt8LE, 0, crc.getNumber(NumberFormat.UInt8LE, 0) ^ data.getNumber(NumberFormat.UInt8LE, current_byte))
+            for (crc_bit = 8; crc_bit > 0; --crc_bit) {
+                if (crc.getNumber(NumberFormat.UInt8LE, 0) & 0x80)
+                    crc.setNumber(NumberFormat.UInt8LE, 0, (crc.getNumber(NumberFormat.UInt8LE, 0) << 1) ^ 0x31)
+                else
+                    crc.setNumber(NumberFormat.UInt8LE, 0, (crc.getNumber(NumberFormat.UInt8LE, 0) << 1))
+            }
+        }
+        return crc.getNumber(NumberFormat.UInt8LE, 0);
+    }
+
     let temperature: number = 0
     let humidity: number = 0
     let co2: number = 0
@@ -54,6 +80,9 @@ namespace SCD30 {
         //co2
         tbuf.setNumber(NumberFormat.Int8LE, 0, buf.getNumber(NumberFormat.UInt8LE, 0))
         tbuf.setNumber(NumberFormat.Int8LE, 1, buf.getNumber(NumberFormat.UInt8LE, 1))
+        data[0] = buf.getNumber(NumberFormat.UInt8LE,0)
+        data[1] = buf.getNumber(NumberFormat.UInt8LE,1)
+        serial.writeString("crc: "+generate_crc(data)+" read: "+buf.getNumber(NumberFormat.UInt8LE,1)+" ok:" +(generate_crc(data)==buf.getNumber(NumberFormat.UInt8LE,2))+"\r\")
         tbuf.setNumber(NumberFormat.Int8LE, 3, buf.getNumber(NumberFormat.UInt8LE, 3))
         tbuf.setNumber(NumberFormat.Int8LE, 4, buf.getNumber(NumberFormat.UInt8LE, 4))
         co2 = tbuf.getNumber(NumberFormat.Float32BE, 0)
