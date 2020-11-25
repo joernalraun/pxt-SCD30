@@ -5,20 +5,20 @@
 namespace SCD30 {
 
     let data = pins.createBuffer(2)
-    //data[1] = 0xEF
-    //data[0] = 0xBE
+    data[0] = 0xBE
+    data[1] = 0xEF
     //hier muss die Dezimalzahl 146 rauskommen!
+    //    CRC(0xBEEF) = 0x92
     //data[0] ist immer das höchste Byte!
-    //basic.showNumber(generate_crc(data))
-
-    function generate_crc(data: Buffer): number {
+    console.log("::"+crc(data)+"-"+0x92)
+    function crc(data: Buffer, offset: number = 0 ): number {
         let current_byte;
         let crc = pins.createBuffer(1)
         crc.setNumber(NumberFormat.UInt8LE, 0, 0xFF)
         let crc_bit;
 
         //calculates 8-Bit checksum with given polynomial 
-        for (current_byte = 0; current_byte < data.length; ++current_byte) {
+        for (current_byte = offset; current_byte < offset+2; ++current_byte) {
             crc.setNumber(NumberFormat.UInt8LE, 0, crc.getNumber(NumberFormat.UInt8LE, 0) ^ data.getNumber(NumberFormat.UInt8LE, current_byte))
             for (crc_bit = 8; crc_bit > 0; --crc_bit) {
                 if (crc.getNumber(NumberFormat.UInt8LE, 0) & 0x80)
@@ -44,11 +44,28 @@ namespace SCD30 {
     function enableContinuousMeasurement(): void{
         let commandBuffer = pins.createBuffer(5)
 
+        //command
         commandBuffer[0] = 0x00 
         commandBuffer[1] = 0x10 
-        commandBuffer[2] = 0x00 
-        commandBuffer[3] = 0x00 
-        commandBuffer[4] = 0x81
+        //pressure in mBar
+        //200m = 987mBar = 0x03DB
+        commandBuffer[2] = 0x03 //MSB 
+        commandBuffer[3] = 0xDB //LSB
+        commandBuffer[4] = crc(commandBuffer,2) 
+
+        pins.i2cWriteBuffer(0x61, commandBuffer, false)
+    }
+    export function setCalibration400ppm(): void{
+        let commandBuffer = pins.createBuffer(5)
+
+        //command
+        commandBuffer[0] = 0x52 
+        commandBuffer[1] = 0x04 
+        //pressure in mBar
+        //200m = 987mBar = 0x03DB
+        commandBuffer[2] = 0x01 //MSB 
+        commandBuffer[3] = 0x90 //LSB
+        commandBuffer[4] = crc(commandBuffer,2) 
 
         pins.i2cWriteBuffer(0x61, commandBuffer, false)
     }
@@ -80,9 +97,10 @@ namespace SCD30 {
         //co2
         tbuf.setNumber(NumberFormat.Int8LE, 0, buf.getNumber(NumberFormat.UInt8LE, 0))
         tbuf.setNumber(NumberFormat.Int8LE, 1, buf.getNumber(NumberFormat.UInt8LE, 1))
-        data[0] = buf.getNumber(NumberFormat.UInt8LE,1)
-        data[1] = buf.getNumber(NumberFormat.UInt8LE,0)
-        serial.writeString("crc: "+generate_crc(data)+" read: "+buf.getNumber(NumberFormat.UInt8LE,1)+" ok:" +(generate_crc(data)==buf.getNumber(NumberFormat.UInt8LE,2))+"\r\n")
+        data[0] = buf.getNumber(NumberFormat.UInt8LE,0)
+        data[1] = buf.getNumber(NumberFormat.UInt8LE,1)
+        serial.writeString("crc: "+crc(data)+" read: "+buf.getNumber(NumberFormat.UInt8LE,1)+" ok:" +(crc(data)==buf.getNumber(NumberFormat.UInt8LE,2)))
+        serial.writeLine("")
         tbuf.setNumber(NumberFormat.Int8LE, 3, buf.getNumber(NumberFormat.UInt8LE, 3))
         tbuf.setNumber(NumberFormat.Int8LE, 4, buf.getNumber(NumberFormat.UInt8LE, 4))
         co2 = tbuf.getNumber(NumberFormat.Float32BE, 0)
