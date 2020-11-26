@@ -41,7 +41,7 @@ namespace SCD30 {
         enableContinuousMeasurement()
         while (true) {
             readMeasurement()
-            control.waitMicros(2000000)
+            basic.pause(2000)
         }
     })
     
@@ -87,9 +87,9 @@ namespace SCD30 {
     //% block="getCalibration" 
     //% blockId=getCalibration
     export function getCalibration(): number {
+        let buf = pins.createBuffer(3)
         pins.i2cWriteNumber(0x61, 0x5204, NumberFormat.UInt16BE,false)
         basic.pause(10)
-        let buf = pins.createBuffer(3)
         buf = pins.i2cReadBuffer(0x61, 3, false)
         let res = buf[0]<<8 + buf[1]
         return res
@@ -101,9 +101,9 @@ namespace SCD30 {
     //% block="getVersion" 
     //% blockId=getVersion
     export function getVersion(): string {
+        let buf = pins.createBuffer(3)
         pins.i2cWriteNumber(0x61, 0xD100, NumberFormat.UInt16BE,false)
         basic.pause(10)
-        let buf = pins.createBuffer(3)
         buf = pins.i2cReadBuffer(0x61, 3, false)
         let res = "" + buf[0] + "." + buf[1]
         return res
