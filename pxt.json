@@ -3,8 +3,7 @@
     "version": "0.0.1",
     "description": "SCD30 for MakeCode",
     "dependencies": {
-        "core": "*",
-        "bluetooth": "*"
+        "core": "*"
     },
     "files": [
         "README.md",
