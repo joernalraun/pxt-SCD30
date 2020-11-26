@@ -86,12 +86,12 @@ namespace SCD30 {
     //% weight=87 blockGap=8
     //% block="getCalibration" 
     //% blockId=getCalibration
-    export function getCalibration(): number {
+    export function getCalibration(): string {
         let buf = pins.createBuffer(3)
         pins.i2cWriteNumber(0x61, 0x5204, NumberFormat.UInt16BE,false)
         basic.pause(10)
         buf = pins.i2cReadBuffer(0x61, 3, false)
-        let res = buf[0]<<8 + buf[1]
+        let res = ""+buf[0]+"." + buf[1]+"-"+buf[2]
         return res
     }
     /**
