@@ -92,7 +92,6 @@ namespace SCD30 {
         let buf = pins.createBuffer(3)
         buf = pins.i2cReadBuffer(0x61, 3, false)
         let res = buf[0]<<8 + buf[1]
-        serial.writeLine("calibration: "+res)
         return res
     }
     /**
@@ -107,7 +106,6 @@ namespace SCD30 {
         let buf = pins.createBuffer(3)
         buf = pins.i2cReadBuffer(0x61, 3, false)
         let res = "" + buf[0] + "." + buf[1]
-        serial.writeLine("SCD30 Version: "+res)
         return res
     }
 
