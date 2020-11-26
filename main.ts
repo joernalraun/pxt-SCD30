@@ -55,6 +55,12 @@ namespace SCD30 {
 
         pins.i2cWriteBuffer(0x61, commandBuffer, false)
     }
+    /**
+     * Calibrates sensor to 400ppm
+     */
+    //% weight=87 blockGap=8
+    //% block="setCalibration400ppm" 
+    //% blockId=setCalibration400ppm
     export function setCalibration400ppm(): void{
         let commandBuffer = pins.createBuffer(5)
 
