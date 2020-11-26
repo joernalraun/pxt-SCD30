@@ -7,9 +7,9 @@ namespace SCD30 {
     // Protokollbeschreibung des Sensors
     // https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/9.5_CO2/Sensirion_CO2_Sensors_SCD30_Interface_Description.pdf
 
-    let data = pins.createBuffer(2)
-    data[0] = 0xBE
-    data[1] = 0xEF
+    //let data = pins.createBuffer(2)
+    //data[0] = 0xBE
+    //data[1] = 0xEF
     //hier muss die Dezimalzahl 146 rauskommen!
     //    CRC(0xBEEF) = 0x92
     //data[0] ist immer das höchste Byte!
@@ -86,12 +86,12 @@ namespace SCD30 {
     //% weight=87 blockGap=8
     //% block="getCalibration" 
     //% blockId=getCalibration
-    export function getCalibration(): string {
+    export function getCalibration(): number {
         let buf = pins.createBuffer(3)
         pins.i2cWriteNumber(0x61, 0x5204, NumberFormat.UInt16BE,false)
         basic.pause(10)
         buf = pins.i2cReadBuffer(0x61, 3, false)
-        let res = ""+buf[0]+"." + buf[1]+"-"+buf[2]
+        let res = (buf[0]<<8) + buf[1]
         return res
     }
     /**
@@ -114,7 +114,7 @@ namespace SCD30 {
         pins.i2cWriteNumber(0x61, 0x0202, NumberFormat.UInt16BE,false)
         basic.pause(10)
         buf = pins.i2cReadBuffer(0x61, 3, false)
-        let res = buf[0]<<8 + buf[1]
+        let res = (buf[0]<<8) + buf[1]
 
         if(buf[1] == 1){
             return true
