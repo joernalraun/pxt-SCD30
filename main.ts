@@ -4,6 +4,9 @@
 //%color=#444444 icon="\uf185" block="SCD30"
 namespace SCD30 {
 
+    // Protokollbeschreibung des Sensors
+    // https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/9.5_CO2/Sensirion_CO2_Sensors_SCD30_Interface_Description.pdf
+
     let data = pins.createBuffer(2)
     data[0] = 0xBE
     data[1] = 0xEF
@@ -38,6 +41,7 @@ namespace SCD30 {
         enableContinuousMeasurement()
         while (true) {
             readMeasurement()
+            control.waitMicros(2000000)
         }
     })
     
@@ -61,7 +65,7 @@ namespace SCD30 {
     //% weight=87 blockGap=8
     //% block="setCalibration400ppm" 
     //% blockId=setCalibration400ppm
-    export function setCalibration400ppm(): void{
+    export function setCalibration400ppm(): void {
         let commandBuffer = pins.createBuffer(5)
 
         //command
@@ -74,6 +78,37 @@ namespace SCD30 {
         commandBuffer[4] = crc(commandBuffer,2) 
 
         pins.i2cWriteBuffer(0x61, commandBuffer, false)
+    }
+
+    /**
+     * read calibration data
+     */
+    //% weight=87 blockGap=8
+    //% block="getCalibration" 
+    //% blockId=getCalibration
+    export function getCalibration(): number {
+        pins.i2cWriteNumber(0x61, 0x5204, NumberFormat.UInt16BE,false)
+        basic.pause(10)
+        let buf = pins.createBuffer(3)
+        buf = pins.i2cReadBuffer(0x61, 3, false)
+        let res = buf[0]<<8 + buf[1]
+        serial.writeLine("calibration: "+res)
+        return res
+    }
+    /**
+     * read sensor version
+     */
+    //% weight=87 blockGap=8
+    //% block="getVersion" 
+    //% blockId=getVersion
+    export function getVersion(): string {
+        pins.i2cWriteNumber(0x61, 0xD100, NumberFormat.UInt16BE,false)
+        basic.pause(10)
+        let buf = pins.createBuffer(3)
+        buf = pins.i2cReadBuffer(0x61, 3, false)
+        let res = "" + buf[0] + "." + buf[1]
+        serial.writeLine("SCD30 Version: "+res)
+        return res
     }
 
     function readReady(): boolean{
