@@ -125,6 +125,7 @@ namespace SCD30 {
 
     function readMeasurement(): void{
         while(readReady() == false){
+            basic.pause(10)
             //serial.writeLine("waiting in: readMeasurement()")
         }
         let buf = pins.createBuffer(18)
@@ -136,8 +137,6 @@ namespace SCD30 {
         //co2
         tbuf.setNumber(NumberFormat.Int8LE, 0, buf.getNumber(NumberFormat.UInt8LE, 0))
         tbuf.setNumber(NumberFormat.Int8LE, 1, buf.getNumber(NumberFormat.UInt8LE, 1))
-        data[0] = buf.getNumber(NumberFormat.UInt8LE,0)
-        data[1] = buf.getNumber(NumberFormat.UInt8LE,1)
         tbuf.setNumber(NumberFormat.Int8LE, 3, buf.getNumber(NumberFormat.UInt8LE, 3))
         tbuf.setNumber(NumberFormat.Int8LE, 4, buf.getNumber(NumberFormat.UInt8LE, 4))
         co2 = tbuf.getNumber(NumberFormat.Float32BE, 0)
