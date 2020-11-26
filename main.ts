@@ -10,7 +10,7 @@ namespace SCD30 {
     //hier muss die Dezimalzahl 146 rauskommen!
     //    CRC(0xBEEF) = 0x92
     //data[0] ist immer das höchste Byte!
-    console.log("::"+crc(data)+"-"+0x92)
+    //console.log("::"+crc(data)+"-"+0x92)
     function crc(data: Buffer, offset: number = 0 ): number {
         let current_byte;
         let crc = pins.createBuffer(1)
