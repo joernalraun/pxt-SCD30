@@ -1,7 +1,7 @@
 {
 	"SCD30.readCO2": "Liest den CO2 Wert",
 	"SCD30.readTemperature": "Liest die Temperatur",
-	"SCD30.readHumidity": "Liest die Luftfeuchtigkeit"
+	"SCD30.readHumidity": "Liest die Luftfeuchtigkeit",
 	"SCD30.getVersion": "Zeigt die Sensor-Version",
 	"SCD30.getCalibration": "Zeigt den Kalibrierungswert an",
 	"SCD30.setCalibration400ppm": "Setzt die Kalibrierung des Sensors auf 400ppm"
