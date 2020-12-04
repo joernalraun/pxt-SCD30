@@ -4,5 +4,5 @@
 	"SCD30.readHumidity|block": "Luftfeuchtigkeit",
 	"SCD30.getVersion|block": "Sensor-Version",
 	"SCD30.getCalibration|block": "Kalibrierungswert anzeigen",
-	"SCD30.setCalibration400ppm|block": "Kalibriere den Sensor auf 400ppm"    
+	"SCD30.setCalibration400ppm|block": "kalibriere den Sensor auf 400ppm"    
 }
